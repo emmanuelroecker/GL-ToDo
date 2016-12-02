@@ -1,0 +1,15 @@
+[Unit]
+Description=GL-ToDo
+After=network.target
+
+[Service]
+ExecStart=/home/projects/nodejs/GL-ToDo/app.js
+Restart=always
+User=nobody
+Group=nobody
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/home/projects/nodejs/GL-ToDo
+
+[Install]
+WantedBy=multi-user.target

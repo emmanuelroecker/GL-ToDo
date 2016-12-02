@@ -1,6 +1,9 @@
 "use strict";
 
-var socket = io.connect(window.location.href);
+
+var serverHost = window.location.protocol + "//" + window.location.host;
+var socket = io.connect(serverHost, { path: '/' +  window.location.pathname + '/socket.io'});
+
 var ulElt = document.getElementById("taches");
 var errorElt = document.getElementById("error");
 
