@@ -37,7 +37,7 @@ io.on("connection", function(socket) {
 });
 
 
-var serverport = 8080;
+var serverport = 8011;
 server.listen(serverport, function() {
 	console.log("server todolist started on port : " + serverport);
 });
