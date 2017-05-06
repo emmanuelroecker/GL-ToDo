@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "dependencies": {
         "express": "~4.14.0",
-        "socket.io": "~1.4.5"
+        "socket.io": "~1.4.5",
+        "rethinkdb":"~2.3.3"
     },
     "author": "Glicer <contact@glicer.com>",
     "description": "Une todolist en temps réel"
