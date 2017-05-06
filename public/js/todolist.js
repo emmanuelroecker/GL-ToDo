@@ -12,9 +12,9 @@ var errorElt = document.getElementById("error");
 
 function afficherErreur(message) {
 	errorElt.textContent = message;
-	errorElt.style.visibility = "visible";
+	errorElt.style.display = "block";
 	setTimeout(function() {
-		errorElt.style.visibility = "hidden";
+		errorElt.style.display = "none";
 	}, 2000);
 }
 
@@ -22,13 +22,21 @@ socket.on("taches", function(taches) {
 	ulElt.innerHTML = "";
 	taches.forEach(function(tache) {
 		var liElt = document.createElement("li");
+        
+        var itmElt = document.createElement("span");
+        itmElt.classList.add("item");
+        itmElt.appendChild(document.createTextNode(tache));
+        
 		var spanElt = document.createElement("span");
-		spanElt.textContent = "✘";
+//		spanElt.textContent = "✘";
+        spanElt.classList.add("button");
+        spanElt.classList.add("icon-trash");
 		spanElt.addEventListener("click", function() {
 			socket.emit("supprimerTache", tache);
 		});
-		liElt.appendChild(spanElt);
-		liElt.appendChild(document.createTextNode(tache));
+      
+		liElt.appendChild(itmElt);
+        liElt.appendChild(spanElt);
 		ulElt.appendChild(liElt);
 	});
 });

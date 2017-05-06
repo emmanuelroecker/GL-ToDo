@@ -2,29 +2,43 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
-    <title>ToDo List Temps Réel</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ToDo App</title>
+    <meta name="description" content="ToDo List Temps Réel">
+    <meta name="robots" content="noarchive">
+    <meta name="google" content="notranslate">
+    <meta name="author" content="© Glicer">
+    <link rel="shortcut icon" href="img/favicon.ico">
     <link rel="stylesheet" href="css/todolist.css">
+    <link rel="stylesheet" href="css/todolistfont.css">
 </head>
 
 <body>
-    <h1>La ToDo List Temps Réel !</h1>
+<div class="container">
+    <div class="app">
+        <div class="app-content">
+            <div class="header">
+                <form id="ajouterTache" class="add-todo">
+                    <label for="newtodo" class="sr-only">Nouvelle tâche</label>
+                    <input type="text" name="newtodo" id="newtodo" placeholder="Nouvelle tâche" autofocus/>
+                    <button type="submit" class="button"><i class="icon-plus"></i></button>
+                </form>
+            </div>
 
-    <ul id="taches">
-    </ul>
+            <p id="error"></p>
+            <ul id="taches" class="todo-list">
+            </ul>
+        </div>
+    </div>
+    <footer>
+        <small>Dev & Rock 'n' roll © 2016 Glicer</small>
+    </footer>
+</div>
 
-    <form id="ajouterTache">
-        <p>
-            <label for="newtodo">Que dois-je faire ?</label>
-            <input type="text" name="newtodo" id="newtodo" autofocus />
-            <input type="submit" value="valider" />
-        </p>
-    </form>
-
-    <p id="error">
-    </p>
-    <script src="socket.io/socket.io.js"></script>
-    <script src="js/todolist.js"></script>
+<script src="socket.io/socket.io.js"></script>
+<script src="js/todolist.js"></script>
 </body>
 
 </html>
