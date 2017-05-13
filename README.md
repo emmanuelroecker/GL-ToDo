@@ -1,6 +1,11 @@
-# GL-Todolist in realtime
+# Shared real time ToDoList
 
-Real-time ToDoList Server using [Node.js](nodejs.org) & [Express](http://expressjs.com/)
+[Demo](http://projects.glicer.com/todo)
+
+Shared real time ToDoList Server using :
+* [Node.js](nodejs.org)
+* [Express](http://expressjs.com/)
+* [Rethinkdb](https://www.rethinkdb.com/)
 
 ## Getting Started
 
@@ -8,15 +13,16 @@ Real-time ToDoList Server using [Node.js](nodejs.org) & [Express](http://express
 
 - [Git](https://git-scm.com/)
 - [Node.js and npm](nodejs.org) Node >= 4.x.x, npm >= 2.x.x
+- [Rethinkdb](https://www.rethinkdb.com/) >= 2.3.x
 
-### Developing
-
+### Install
+ 
 Run `npm install` to install server dependencies.
 
 ## Running ToDoList server
 
-`node app.js`
+`node server.js`
 
-URL server : http://[hostname]:8080
+URL server : http://[hostname]:8011
 
 ## Testing

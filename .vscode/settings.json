@@ -1,0 +1,14 @@
+{
+    "workbench.iconTheme": "vscode-icons",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 5000,
+
+    "TodoParser": {
+        "exclude": ["cpp", "c"],
+        "include": ["js"],
+        "folderExclude": ["node_modules", ".vscode"],
+        "only": ["sub-folder/sub-sub-folder"],
+        "markers": ["NOTE:", "REMINDER:"],
+        "autoDefaultMarkers": true
+    }
+}
