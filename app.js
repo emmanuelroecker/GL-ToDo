@@ -6,38 +6,49 @@ var express = require("express");
 var app = express();
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
+var r = require('rethinkdb');
 
-var toDoList = [];
+var httpport = 8011;
+var db = {
+  host: 'localhost',
+  port: 28015
+};
+var tablename = "todolist";
 
 app.use(express.static("public"));
 
-io.on("connection", function(socket) {
-	socket.emit("taches", toDoList);
+r.connect(db)
+  .then(function(dbconnection) {
+    r.table(tablename).changes().run(dbconnection).then(function(cursor) {
+      cursor.each(function(err, task) {
+        io.sockets.emit("tasks", task);
+      });
+    });
+    return dbconnection;
+  })
+  .then(function(dbconnection) {
+    io.on("connection", function(socket) {
+      socket.on("addTask", function(task) {
+        r.table(tablename).insert(task).run(dbconnection);
+      });
+      socket.on("deleteTask", function(task) {
+        r.table(tablename).get(task.id).delete().run(dbconnection);
+      });
 
-	socket.on("ajouterTache", function(tache) {
-		if (toDoList.indexOf(tache) >= 0) {
-			socket.emit("erreur", "La tâche '" + tache + "' existe déjà !");
-		} else {
-			toDoList.push(tache);
-			socket.broadcast.emit("taches", toDoList);
-			socket.emit("taches", toDoList);
-		}
-	});
+      r.table(tablename).run(dbconnection)
+        .then(function(cursor) {
+          return cursor.toArray();
+        })
+        .then(function(result) {
+          socket.emit("tasks", result);
+        })
+        .error(function(err) {
+          socket.emit("error", "Erreur serveur");
+          console.log("Failure:", err);
+        });
+    });
+  });
 
-	socket.on("supprimerTache", function(tache) {
-		var index = toDoList.indexOf(tache);
-		if (index < 0) {
-			socket.emit("erreur", "La tâche '" + tache + "' n'existe pas !");
-		} else {
-			toDoList.splice(index, 1);
-			socket.broadcast.emit("taches", toDoList);
-			socket.emit("taches", toDoList);
-		}
-	});
-});
-
-
-var serverport = 8011;
-server.listen(serverport, function() {
-	console.log("server todolist started on port : " + serverport);
+server.listen(httpport, function() {
+  console.log("ToDoList Server started on port : " + httpport);
 });
