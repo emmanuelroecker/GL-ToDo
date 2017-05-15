@@ -3,7 +3,7 @@ Description=GL-ToDo
 After=network.target
 
 [Service]
-ExecStart=/home/projects/nodejs/GL-ToDo/app.js
+ExecStart=/home/projects/nodejs/GL-ToDo/server.js
 Restart=always
 User=projects
 Group=projects
