@@ -22,7 +22,6 @@ var socket = io.connect(serverHost, socketOptions);
 
 var ulElt = document.getElementById('tasks');
 var errorElt = document.getElementById('error');
-var dateoptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
 
 function viewError(message) {
     errorElt.textContent = message;
@@ -32,19 +31,24 @@ function viewError(message) {
     }, 2000);
 }
 
+function deleteTask(id) {
+    var liElt = document.getElementById(id);
+    ulElt.removeChild(liElt);
+}
+
 function addTask(task) {
     var liElt = document.createElement('li');
     liElt.setAttribute('id', task.id);
 
     var itmElt = document.createElement('span');
     itmElt.classList.add('item');
-    itmElt.appendChild(document.createTextNode(task.name));
+    itmElt.appendChild(document.createTextNode(task.task));
 
     var spanElt = document.createElement('span');
     spanElt.classList.add('button');
     spanElt.classList.add('icon-trash');
     spanElt.addEventListener('click', function() {
-        socket.emit('deleteTask', task);
+        socket.emit('deleteTask', task.id);
     });
 
     liElt.appendChild(itmElt);
@@ -53,35 +57,18 @@ function addTask(task) {
 }
 
 socket.on('tasks', function(tasks) {
-
-    if (tasks.length) {
-        tasks.forEach(function(task) {
-            addTask(task);
-        });
-        return;
-    }
-
-    //new task
-    if ((!tasks.old_val) && (tasks.new_val)) {
-        addTask(tasks.new_val);
-        return;
-    }
-
-    //delete task
-    if ((tasks.old_val) && (!tasks.new_val)) {
-        var liElt = document.getElementById(tasks.old_val.id);
-        ulElt.removeChild(liElt);
-        return;
-    }
-
-    //update task
-    if (tasks.new_val && tasks.old_val) {
-        var liElt = document.getElementById(tasks.new_val.id);
-        var item = liElt.getElementsByClassName('item')[0];
-        item.textContent = tasks.new_val.name;
-        return;
-    }
+    tasks.forEach(function(task) {
+        addTask(task);
+    });
 });
+
+socket.on('addTask', function(task) {
+    addTask(task);
+});
+
+socket.on('deleteTask', function(id) {
+    deleteTask(id);
+})
 
 socket.on('reconnect', function() {
     ulElt.innerHTML = '';
@@ -105,11 +92,9 @@ formElt.addEventListener('submit', function(e) {
     var newTask = elements.newtodo.value.trim();
 
     if (newTask.length <= 0) {
-        viewError('Merci d\'indiquer une tâche');
+        viewError('Indiquer une tâche');
     } else {
-        socket.emit('addTask', {
-            name: newTask
-        });
+        socket.emit('addTask', newTask);
         e.target.reset();
     }
 });

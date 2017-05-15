@@ -13,54 +13,49 @@
 
 'use strict';
 
-var express = require('express');
-var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-var r = require('rethinkdb');
-
-var httpport = 8011;
-var db = {
-    host: 'localhost',
-    port: 28015
-};
-var tablename = 'todolist';
+let express = require('express');
+const app = express();
+let server = require('http').Server(app);
+let sqlite3 = require('sqlite3');
+let databaseName = './db.sqlite';
+let port = 8011;
+let tablename = 'todolist';
 
 app.use(express.static('public'));
 
-r.connect(db)
-    .then(function(dbconnection) {
-        r.table(tablename).changes().run(dbconnection).then(function(cursor) {
-            cursor.each(function(err, task) {
-                io.sockets.emit('tasks', task);
+let db = new sqlite3.Database(databaseName, (err) => {
+    if (err) throw new Error(err);
+    db.exec(`create table if not exists ${tablename}(timestamp DATE DEFAULT CURRENT_TIMESTAMP, task)`, (err) => {
+        if (err) throw new Error(err);
+        server.listen(port, () => {
+            webSockerServer();
+            console.log(`Server started (port : ${port})`);
+        });
+    })
+});
+
+function webSockerServer() {
+    let ws = require('socket.io')(server);
+
+    ws.on('connection', (client) => {
+        db.all(`SELECT rowid as id, task FROM ${tablename} ORDER BY timestamp`, function(err, rows) {
+            if (err) console.log(err)
+            else
+                client.emit('tasks', rows);
+        });
+
+        client.on('addTask', (task) => {
+            db.run(`INSERT INTO ${tablename} (task) VALUES ("${task}")`, function(err) {
+                if (err) console.log(err)
+                else ws.emit('addTask', { id: this.lastID, task: task });
             });
         });
-        return dbconnection;
-    })
-    .then(function(dbconnection) {
-        io.on('connection', function(socket) {
-            socket.on('addTask', function(task) {
-                task.timestamp = new Date();
-                r.table(tablename).insert(task).run(dbconnection);
-            });
-            socket.on('deleteTask', function(task) {
-                r.table(tablename).get(task.id).delete().run(dbconnection);
-            });
 
-            r.table(tablename).orderBy({ index: 'timestamp' }).run(dbconnection)
-                .then(function(cursor) {
-                    return cursor.toArray();
-                })
-                .then(function(result) {
-                    socket.emit('tasks', result);
-                })
-                .error(function(err) {
-                    socket.emit('error', 'Erreur serveur');
-                    console.log('Failure:', err);
-                });
+        client.on('deleteTask', (id) => {
+            db.run(`DELETE FROM ${tablename} WHERE rowid=${id}`, function(err) {
+                if (err) console.log(err)
+                else ws.emit('deleteTask', id);
+            });
         });
     });
-
-server.listen(httpport, function() {
-    console.log('ToDoList Server started on port : ' + httpport);
-});
+}

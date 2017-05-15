@@ -5,7 +5,7 @@
 Shared real time ToDoList Server using :
 * [Node.js](nodejs.org)
 * [Express](http://expressjs.com/)
-* [Rethinkdb](https://www.rethinkdb.com/)
+* [SQLite](https://www.sqlite.org/about.html)
 
 ## Getting Started
 
