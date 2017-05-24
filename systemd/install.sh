@@ -7,4 +7,5 @@ cd /etc/systemd/system/multi-user.target.wants
 ln -s ../gltodo.service .
 systemctl daemon-reload
 service gltodo start
+systemctl status gltodo
 
